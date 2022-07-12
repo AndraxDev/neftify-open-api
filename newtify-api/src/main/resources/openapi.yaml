@@ -1,0 +1,216 @@
+openapi: 3.0.3
+info:
+  title: Newtify OpenApi Definition
+  description: Definition defines REST API for Newtify web service
+  version: v1
+servers:
+  - url: localhost:8081
+    description: localhost url for testing purposes
+tags:
+  - name: namedays
+    description: Group of endpoints to handle operations with name day
+  - name: articles
+    description: Group of endpoints to handle operations with articles
+paths:
+  /v1/articles:
+    get:
+      description: Query all articles
+      operationId: retrieveArticles
+      tags:
+        - articles
+      parameters:
+        - in: query
+          name: topic
+          schema:
+            type: string
+          description: Used to filter articles by topic
+      responses:
+        "200":
+          description: It will return lst of articles either by topic
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ArticleDTO"
+    post:
+      description: Create article
+      operationId: createArticle
+      tags:
+        - articles
+      requestBody:
+        description: Data model for article creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateArticleDTO"
+            example:
+              title: article title
+              shortTitle: short title
+              text: text
+              createdAt: 162923278212
+              author: John Doe
+              topicType: GAMING
+      responses:
+        "201":
+          description: Article created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDTO"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "403":
+          $ref: "#/components/responses/accessDenied"
+        "500":
+          $ref: "#/components/responses/internalServerError"
+  /v1/articles/{articleUUid}:
+    get:
+      description: Get article by id
+      operationId: retrieveArticle
+      tags:
+        - articles
+      parameters:
+        - name: articleUUid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: returns detail of articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDTO"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "403":
+          $ref: "#/components/responses/accessDenied"
+        "500":
+          $ref: "#/components/responses/internalServerError"
+  /v1/namedays:
+    get:
+      description: Endpoint to retrieve name day for specified day and month
+      operationId: retrieveNameDay
+      parameters:
+        - in: query
+          name: month
+          schema:
+            type: integer
+          description: Refers to particular month where name day has to be checked
+        - in: query
+          name: day
+          schema:
+            type: integer
+          description: Refers to particular day where name day has to be checked
+      tags:
+        - namedays
+      responses:
+        "200":
+          description: Returns who has a name day at particular day
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NameDayDTO"
+              example:
+                - month: 1
+                  day: 5
+                  name: Andrea
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "403":
+          $ref: "#/components/responses/accessDenied"
+        "500":
+          $ref: "#/components/responses/internalServerError"
+components:
+  schemas:
+    ArticleDTO:
+      type: object
+      properties:
+        uuid:
+          type: string
+        title:
+          type: string
+        shortTitle:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: long
+        author:
+          type: string
+        topicType:
+          $ref: "#/components/schemas/ETopicType"
+    CreateArticleDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        shortTitle:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: long
+        author:
+          type: string
+        topicType:
+          $ref: "#/components/schemas/ETopicType"
+    ETopicType:
+      type: string
+      enum:
+        - NEWS
+        - GAMING
+        - FASHION
+        - FINANCE
+        - MOVIE
+        - MUSIC
+    NameDayDTO:
+      type: object
+      properties:
+        month:
+          type: integer
+        day:
+          type: integer
+        name:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    badRequest:
+      description: BadRequest
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            value:
+              code: BAD_REQUEST
+              message: Bad request sent
+    accessDenied:
+      description: AccessDenied
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            value:
+              code: FORBIDDEN
+              message: You don't have required permissions to perform this action.
+    internalServerError:
+      description: InternalServerError
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            value:
+              code: INTERNAL_ERROR
+              message: Server error occurred. Please contact to your administrator.
