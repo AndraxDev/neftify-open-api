@@ -25,11 +25,13 @@ public class ArticlesController implements ArticlesApi {
 
     @Override
     public ResponseEntity<ArticleDTO> retrieveArticle(String articleUUid) {
-        return null;
+        ArticleDTO article = articleService.retrieveArticle(articleUUid);
+        return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
     @Override
     public ResponseEntity<List<ArticleDTO>> retrieveArticles(String topic) {
-        return null;
+        List<ArticleDTO> articleList = articleService.retrieveArticles(topic);
+        return ResponseEntity.status(HttpStatus.OK).body(articleList);
     }
 }

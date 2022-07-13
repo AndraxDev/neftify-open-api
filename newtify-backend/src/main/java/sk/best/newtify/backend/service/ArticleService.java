@@ -1,12 +1,18 @@
 package sk.best.newtify.backend.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.api.dto.CreateArticleDTO;
 import sk.best.newtify.api.dto.ETopicType;
 import sk.best.newtify.backend.entity.Article;
 import sk.best.newtify.backend.entity.enums.TopicType;
 import sk.best.newtify.backend.repository.ArticleRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArticleService {
@@ -26,6 +32,56 @@ public class ArticleService {
         article.setTopicType(TopicType.fromValue(createArticleDTO.getTopicType().toString()));
 
         articleRepository.save(article);
+
+        ArticleDTO articleDTO = new ArticleDTO();
+        articleDTO.setUuid(article.getUuid());
+        articleDTO.setTitle(article.getTitle());
+        articleDTO.setShortTitle(article.getShortTitle());
+        articleDTO.setText(article.getText());
+        articleDTO.setCreatedAt(article.getCreatedAt());
+        articleDTO.setAuthor(article.getAuthor());
+        articleDTO.setTopicType(ETopicType.fromValue(article.getTopicType().toString()));
+
+        return articleDTO;
+    }
+
+    public List<ArticleDTO> retrieveArticles(String topic) {
+
+        List<Article> articles = new ArrayList<>();
+
+        if (topic != null && !topic.isEmpty()) {
+            TopicType topicType = TopicType.fromValue(topic);
+            articles = articleRepository.findArticleByTopicType(topicType);
+        } else {
+            articles = articleRepository.findAllByOrderByCreatedAtDesc();
+        }
+
+        List<ArticleDTO> response = new ArrayList<>();
+
+        for (Article article : articles) {
+            ArticleDTO articleDTO = new ArticleDTO();
+            articleDTO.setUuid(article.getUuid());
+            articleDTO.setTitle(article.getTitle());
+            articleDTO.setShortTitle(article.getShortTitle());
+            articleDTO.setText(article.getText());
+            articleDTO.setCreatedAt(article.getCreatedAt());
+            articleDTO.setAuthor(article.getAuthor());
+            articleDTO.setTopicType(ETopicType.fromValue(article.getTopicType().toString()));
+
+            response.add(articleDTO);
+        }
+
+        return response;
+    }
+
+    public ArticleDTO retrieveArticle (String uuid) {
+        Optional<Article> articleOpt = articleRepository.findById(uuid);
+
+        if (articleOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        Article article = articleOpt.get();
 
         ArticleDTO articleDTO = new ArticleDTO();
         articleDTO.setUuid(article.getUuid());

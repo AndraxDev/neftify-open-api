@@ -1,1 +1,1 @@
-# Newtify open API
+# newtify

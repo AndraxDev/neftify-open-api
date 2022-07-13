@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-07-12T16:02:35.690223300+02:00[Europe/Budapest]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-07-13T09:34:23.639778300+02:00[Europe/Budapest]")
 @Validated
 @Tag(name = "Articles", description = "Group of endpoints to handle operations with articles")
 public interface ArticlesApi {
