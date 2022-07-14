@@ -1,6 +1,6 @@
 {
   "name": "no-name",
-  "license": "UNLICENSED",
+  "license": "GNU Public licence",
   "dependencies": {
     "@polymer/iron-a11y-announcer": "3.0.2",
     "@polymer/iron-a11y-keys-behavior": "3.0.1",
