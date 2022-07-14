@@ -7,11 +7,149 @@ servers:
   - url: localhost:8081
     description: localhost url for testing purposes
 tags:
+  - name: comments
+    description: Group of endpoints to handle operations with comments
   - name: articles
     description: Group of endpoints to handle operations with articles
   - name: namedays
     description: Group of endpoints to handle operations with name day
 paths:
+  /v1/comments/{aid}/{cid}:
+    get:
+      description: Fetch comment with specified id
+      operationId: getCommentById
+      tags:
+        - comments
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: cid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: returns comment with specified id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentsDTO"
+    delete:
+      description: Endpoint which can be used to delete article resource specified by articleUuid
+      operationId: deleteComment
+      tags:
+        - comments
+      parameters:
+        - name: cid
+          in: path
+          description: Comment resource identifier
+          required: true
+          schema:
+            type: string
+        - name: aid
+          in: path
+          description: Article resource identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Comment was successfully deleted
+        "404":
+          description: Comment not found
+    put:
+      description: Endpoint to update already existing comment specified by commentsUuid
+      operationId: updateComment
+      parameters:
+        - name: cid
+          in: path
+          description: Comment resource identifier
+          required: true
+          schema:
+            type: string
+        - name: aid
+          in: path
+          description: Article resource identifier
+          required: true
+          schema:
+            type: string
+      tags:
+        - comments
+      requestBody:
+        description: Data model with properties which are required for comment update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentsDTO"
+            example:
+              uuid: abcdef
+              name: John Doe
+              email: example@example.com
+              comment: Lorem ipsum dolor sit amet.
+              createdAt: 2147483647
+      responses:
+        "200":
+          description: Comment was successfully updated
+        "404":
+          description: Comment not found
+
+  /v1/comments/{aid}:
+    get:
+      description: Fetch comments for specified article
+      operationId: getComments
+      tags:
+        - comments
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: returns detail of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommentsDTO"
+    post:
+      description: This is the endpoint which will create Comment object
+      operationId: createComment
+      tags:
+        - comments
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Data model for comments creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentsDTO"
+            example:
+              uuid: abcdef
+              name: John Doe
+              email: example@example.com
+              comment: Lorem ipsum dolor sit amet.
+              createdAt: 2147483647
+      responses:
+        "201":
+          description: Hey, everything went well
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentsDTO"
   /v1/articles:
     post:
       description: This is the endpoint which will create Article
@@ -158,6 +296,34 @@ paths:
           $ref: "#/components/responses/internalServerError"
 components:
   schemas:
+    CommentsDTO:
+      type: object
+      properties:
+        cid:
+          type: string
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        comment:
+          type: string
+        createdAt:
+          type: long
+    CreateCommentsDTO:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        comment:
+          type: string
+        createdAt:
+          type: long
     ArticleDTO:
       type: object
       properties:

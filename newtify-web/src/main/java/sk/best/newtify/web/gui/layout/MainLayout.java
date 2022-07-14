@@ -184,14 +184,9 @@ public class MainLayout extends AppLayout {
                 .set("cursor", "pointer");
 
         navigationBar.add(titleDiv);
-        titleDiv.addClickListener(new ComponentEventListener<ClickEvent<Div>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Div> divClickEvent) {
-                UI.getCurrent().navigate(ETopicType.NEWS.getValue().toLowerCase());
-                tabs.setSelectedIndex(0);
-            }
+        titleDiv.addClickListener((ComponentEventListener<ClickEvent<Div>>) divClickEvent -> {
+            UI.getCurrent().navigate(ETopicType.NEWS.getValue().toLowerCase());
+            tabs.setSelectedIndex(0);
         });
     }
 }
-
-// Useless comment
