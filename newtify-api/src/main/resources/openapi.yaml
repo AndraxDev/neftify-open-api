@@ -7,34 +7,14 @@ servers:
   - url: localhost:8081
     description: localhost url for testing purposes
 tags:
-  - name: namedays
-    description: Group of endpoints to handle operations with name day
   - name: articles
     description: Group of endpoints to handle operations with articles
+  - name: namedays
+    description: Group of endpoints to handle operations with name day
 paths:
   /v1/articles:
-    get:
-      description: Query all articles
-      operationId: retrieveArticles
-      tags:
-        - articles
-      parameters:
-        - in: query
-          name: topic
-          schema:
-            type: string
-          description: Used to filter articles by topic
-      responses:
-        "200":
-          description: It will return lst of articles either by topic
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ArticleDTO"
     post:
-      description: Create article
+      description: This is the endpoint which will create Article
       operationId: createArticle
       tags:
         - articles
@@ -48,48 +28,100 @@ paths:
             example:
               title: article title
               shortTitle: short title
-              text: text
-              createdAt: 162923278212
+              text: very long text of article
+              createdAt: 3847319
               author: John Doe
               topicType: GAMING
       responses:
         "201":
-          description: Article created
+          description: Hey, everything went well
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArticleDTO"
-        "400":
-          $ref: "#/components/responses/badRequest"
-        "403":
-          $ref: "#/components/responses/accessDenied"
-        "500":
-          $ref: "#/components/responses/internalServerError"
-  /v1/articles/{articleUUid}:
     get:
-      description: Get article by id
+      description: This endpoint will return list of articles
+      operationId: retrieveArticles
+      tags:
+        - articles
+      parameters:
+        - in: query
+          name: topic
+          schema:
+            type: string
+          description: Used to filter articles by topic
+      responses:
+        "200":
+          description: It will return list of articles either by topic or everything
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ArticleDTO"
+  /v1/articles/{articleUuid}:
+    get:
+      description: This is the endpoint which will return detail of article
       operationId: retrieveArticle
       tags:
         - articles
       parameters:
-        - name: articleUUid
+        - name: articleUuid
           in: path
           required: true
           schema:
             type: string
       responses:
         "200":
-          description: returns detail of articles
+          description: returns detail of article
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArticleDTO"
-        "400":
-          $ref: "#/components/responses/badRequest"
-        "403":
-          $ref: "#/components/responses/accessDenied"
-        "500":
-          $ref: "#/components/responses/internalServerError"
+    delete:
+      description: Endpoint which can be used to delete article resource specified by articleUuid
+      operationId: deleteArticle
+      tags:
+        - articles
+      parameters:
+        - name: articleUuid
+          in: path
+          description: Article resource identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Article was successfully deleted
+    put:
+      description: Endpoint to update already existing article specified by articleUuid
+      operationId: updateArticle
+      parameters:
+        - name: articleUuid
+          in: path
+          description: Article resource identifier
+          required: true
+          schema:
+            type: string
+      tags:
+        - articles
+      requestBody:
+        description: Data model with properties which are required for article update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateArticleDTO"
+            example:
+              title: Title Article
+              shortTitle: Short article title
+              text: Long text which belongs to article
+              createdAt: 123456
+              author: John Doe
+              topicType: GAMING
+      responses:
+        "200":
+          description: Article was successfully updated
   /v1/namedays:
     get:
       description: Endpoint to retrieve name day for specified day and month

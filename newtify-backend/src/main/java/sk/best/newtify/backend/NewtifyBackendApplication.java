@@ -2,6 +2,8 @@ package sk.best.newtify.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import sk.best.newtify.api.dto.CreateArticleDTO;
+import sk.best.newtify.backend.entity.enums.TopicType;
 
 /**
  * @author Stanislav Blasko
@@ -12,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NewtifyBackendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NewtifyBackendApplication.class, args);
-    }
+        SpringApplication.run(NewtifyBackendApplication.class, args);}
 
 }

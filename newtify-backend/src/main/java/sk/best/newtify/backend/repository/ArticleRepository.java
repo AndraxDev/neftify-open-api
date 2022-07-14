@@ -7,7 +7,8 @@ import sk.best.newtify.backend.entity.enums.TopicType;
 import java.util.List;
 
 public interface ArticleRepository extends CrudRepository<Article, String> {
-    List<Article> findArticleByTopicType(TopicType topicType);
 
-    List<Article> findAllByOrderByCreatedAtDesc();
+    List<Article> findAllByOrderByCreatedAt();
+
+    List<Article> findAllByTopicType(TopicType topicType);
 }

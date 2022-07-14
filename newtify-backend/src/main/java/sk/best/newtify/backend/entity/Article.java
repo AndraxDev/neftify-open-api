@@ -18,7 +18,7 @@ public class Article {
     @Lob
     private String text;
 
-    private long createdAt;
+    private Long createdAt;
 
     private String author;
 
@@ -57,11 +57,11 @@ public class Article {
         this.text = text;
     }
 
-    public long getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(long createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class ArticleService {
+
     private ArticleRepository articleRepository;
 
     public ArticleService(ArticleRepository articleRepository) {
@@ -29,7 +30,9 @@ public class ArticleService {
         article.setText(createArticleDTO.getText());
         article.setCreatedAt(createArticleDTO.getCreatedAt());
         article.setAuthor(createArticleDTO.getAuthor());
-        article.setTopicType(TopicType.fromValue(createArticleDTO.getTopicType().toString()));
+        article.setTopicType(
+                TopicType.fromValue(createArticleDTO
+                        .getTopicType().toString()));
 
         articleRepository.save(article);
 
@@ -40,43 +43,15 @@ public class ArticleService {
         articleDTO.setText(article.getText());
         articleDTO.setCreatedAt(article.getCreatedAt());
         articleDTO.setAuthor(article.getAuthor());
-        articleDTO.setTopicType(ETopicType.fromValue(article.getTopicType().toString()));
+        articleDTO.setTopicType(
+                ETopicType.fromValue(article
+                        .getTopicType().toString()));
 
         return articleDTO;
     }
 
-    public List<ArticleDTO> retrieveArticles(String topic) {
-
-        List<Article> articles = new ArrayList<>();
-
-        if (topic != null && !topic.isEmpty()) {
-            TopicType topicType = TopicType.fromValue(topic);
-            articles = articleRepository.findArticleByTopicType(topicType);
-        } else {
-            articles = articleRepository.findAllByOrderByCreatedAtDesc();
-        }
-
-        List<ArticleDTO> response = new ArrayList<>();
-
-        for (Article article : articles) {
-            ArticleDTO articleDTO = new ArticleDTO();
-            articleDTO.setUuid(article.getUuid());
-            articleDTO.setTitle(article.getTitle());
-            articleDTO.setShortTitle(article.getShortTitle());
-            articleDTO.setText(article.getText());
-            articleDTO.setCreatedAt(article.getCreatedAt());
-            articleDTO.setAuthor(article.getAuthor());
-            articleDTO.setTopicType(ETopicType.fromValue(article.getTopicType().toString()));
-
-            response.add(articleDTO);
-        }
-
-        return response;
-    }
-
-    public ArticleDTO retrieveArticle (String uuid) {
+    public ArticleDTO retrieveArticle(String uuid) {
         Optional<Article> articleOpt = articleRepository.findById(uuid);
-
         if (articleOpt.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -90,8 +65,61 @@ public class ArticleService {
         articleDTO.setText(article.getText());
         articleDTO.setCreatedAt(article.getCreatedAt());
         articleDTO.setAuthor(article.getAuthor());
-        articleDTO.setTopicType(ETopicType.fromValue(article.getTopicType().toString()));
-
+        articleDTO.setTopicType(
+                ETopicType.fromValue(article
+                        .getTopicType().toString()));
         return articleDTO;
     }
+
+    public List<ArticleDTO> retrieveArticles(String topic) {
+        List<Article> articles = new ArrayList<>();
+
+        if (topic != null && !topic.isEmpty()) {
+            // we want to retrieve articles by topic name
+            TopicType topicType = TopicType.fromValue(topic.toUpperCase());
+            articles = articleRepository.findAllByTopicType(topicType);
+        } else {
+            articles = articleRepository.findAllByOrderByCreatedAt();
+        }
+
+        List<ArticleDTO> response = new ArrayList<>();
+
+        for (Article article : articles) {
+            ArticleDTO articleDTO = new ArticleDTO();
+            articleDTO.setUuid(article.getUuid());
+            articleDTO.setTitle(article.getTitle());
+            articleDTO.setShortTitle(article.getShortTitle());
+            articleDTO.setText(article.getText());
+            articleDTO.setCreatedAt(article.getCreatedAt());
+            articleDTO.setAuthor(article.getAuthor());
+            articleDTO.setTopicType(
+                    ETopicType.fromValue(article
+                            .getTopicType().toString()));
+            response.add(articleDTO);
+        }
+
+        return response;
+    }
+
+    public void deleteArticle(String uuid) {
+        articleRepository.deleteById(uuid);
+    }
+
+    public void updateArticle(String uuid, CreateArticleDTO createArticleDTO) {
+        Optional<Article> articleOpt = articleRepository.findById(uuid);
+        if (articleOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Article was not found");
+        }
+
+        Article article = articleOpt.get();
+        article.setTitle(createArticleDTO.getTitle() != null ? createArticleDTO.getTitle() : article.getTitle());
+        article.setShortTitle(createArticleDTO.getShortTitle() != null ? createArticleDTO.getShortTitle() : article.getShortTitle());
+        article.setText(createArticleDTO.getText() != null ? createArticleDTO.getText() : article.getText());
+        article.setCreatedAt(createArticleDTO.getCreatedAt() != null ? createArticleDTO.getCreatedAt() : article.getCreatedAt());
+        article.setAuthor(createArticleDTO.getAuthor() != null ? createArticleDTO.getAuthor() : article.getAuthor());
+        article.setTopicType(createArticleDTO.getTopicType() != null ? TopicType.fromValue(createArticleDTO.getTopicType().getValue()) : article.getTopicType());
+        articleRepository.save(article);
+    }
+
+
 }

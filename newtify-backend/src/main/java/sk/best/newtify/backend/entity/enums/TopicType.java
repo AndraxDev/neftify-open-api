@@ -1,6 +1,7 @@
 package sk.best.newtify.backend.entity.enums;
 
 public enum TopicType {
+
     NEWS("NEWS"),
 
     GAMING("GAMING"),
@@ -22,4 +23,6 @@ public enum TopicType {
     public static TopicType fromValue(String value) {
         return valueOf(value);
     }
+
+
 }

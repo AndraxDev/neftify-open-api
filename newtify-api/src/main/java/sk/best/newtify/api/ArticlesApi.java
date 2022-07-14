@@ -7,7 +7,6 @@ package sk.best.newtify.api;
 
 import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.api.dto.CreateArticleDTO;
-import sk.best.newtify.api.dto.Error;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -31,36 +30,24 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-07-13T09:34:23.639778300+02:00[Europe/Budapest]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2022-07-14T10:27:45.269715+02:00[Europe/Budapest]")
 @Validated
 @Tag(name = "Articles", description = "Group of endpoints to handle operations with articles")
 public interface ArticlesApi {
 
     /**
      * POST /v1/articles
-     * Create article
+     * This is the endpoint which will create Article
      *
      * @param createArticleDTO Data model for article creation (required)
-     * @return Article created (status code 201)
-     *         or BadRequest (status code 400)
-     *         or AccessDenied (status code 403)
-     *         or InternalServerError (status code 500)
+     * @return Hey, everything went well (status code 201)
      */
     @Operation(
         operationId = "createArticle",
         tags = { "articles" },
         responses = {
-            @ApiResponse(responseCode = "201", description = "Article created", content = {
+            @ApiResponse(responseCode = "201", description = "Hey, everything went well", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ArticleDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "BadRequest", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            }),
-            @ApiResponse(responseCode = "403", description = "AccessDenied", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "InternalServerError", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
         }
     )
@@ -76,55 +63,66 @@ public interface ArticlesApi {
 
 
     /**
-     * GET /v1/articles/{articleUUid}
-     * Get article by id
+     * DELETE /v1/articles/{articleUuid}
+     * Endpoint which can be used to delete article resource specified by articleUuid
      *
-     * @param articleUUid  (required)
-     * @return returns detail of articles (status code 200)
-     *         or BadRequest (status code 400)
-     *         or AccessDenied (status code 403)
-     *         or InternalServerError (status code 500)
+     * @param articleUuid Article resource identifier (required)
+     * @return Article was successfully deleted (status code 200)
+     */
+    @Operation(
+        operationId = "deleteArticle",
+        tags = { "articles" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Article was successfully deleted")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = "/v1/articles/{articleUuid}"
+    )
+    ResponseEntity<Void> deleteArticle(
+        @Parameter(name = "articleUuid", description = "Article resource identifier", required = true) @PathVariable("articleUuid") String articleUuid
+    );
+
+
+    /**
+     * GET /v1/articles/{articleUuid}
+     * This is the endpoint which will return detail of article
+     *
+     * @param articleUuid  (required)
+     * @return returns detail of article (status code 200)
      */
     @Operation(
         operationId = "retrieveArticle",
         tags = { "articles" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "returns detail of articles", content = {
+            @ApiResponse(responseCode = "200", description = "returns detail of article", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ArticleDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "BadRequest", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            }),
-            @ApiResponse(responseCode = "403", description = "AccessDenied", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
-            }),
-            @ApiResponse(responseCode = "500", description = "InternalServerError", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))
             })
         }
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/v1/articles/{articleUUid}",
+        value = "/v1/articles/{articleUuid}",
         produces = { "application/json" }
     )
     ResponseEntity<ArticleDTO> retrieveArticle(
-        @Parameter(name = "articleUUid", description = "", required = true) @PathVariable("articleUUid") String articleUUid
+        @Parameter(name = "articleUuid", description = "", required = true) @PathVariable("articleUuid") String articleUuid
     );
 
 
     /**
      * GET /v1/articles
-     * Query all articles
+     * This endpoint will return list of articles
      *
      * @param topic Used to filter articles by topic (optional)
-     * @return It will return lst of articles either by topic (status code 200)
+     * @return It will return list of articles either by topic or everything (status code 200)
      */
     @Operation(
         operationId = "retrieveArticles",
         tags = { "articles" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "It will return lst of articles either by topic", content = {
+            @ApiResponse(responseCode = "200", description = "It will return list of articles either by topic or everything", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ArticleDTO.class))
             })
         }
@@ -136,6 +134,32 @@ public interface ArticlesApi {
     )
     ResponseEntity<List<ArticleDTO>> retrieveArticles(
         @Parameter(name = "topic", description = "Used to filter articles by topic") @Valid @RequestParam(value = "topic", required = false) String topic
+    );
+
+
+    /**
+     * PUT /v1/articles/{articleUuid}
+     * Endpoint to update already existing article specified by articleUuid
+     *
+     * @param articleUuid Article resource identifier (required)
+     * @param createArticleDTO Data model with properties which are required for article update (required)
+     * @return Article was successfully updated (status code 200)
+     */
+    @Operation(
+        operationId = "updateArticle",
+        tags = { "articles" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Article was successfully updated")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/v1/articles/{articleUuid}",
+        consumes = { "application/json" }
+    )
+    ResponseEntity<Void> updateArticle(
+        @Parameter(name = "articleUuid", description = "Article resource identifier", required = true) @PathVariable("articleUuid") String articleUuid,
+        @Parameter(name = "CreateArticleDTO", description = "Data model with properties which are required for article update", required = true) @Valid @RequestBody CreateArticleDTO createArticleDTO
     );
 
 }
