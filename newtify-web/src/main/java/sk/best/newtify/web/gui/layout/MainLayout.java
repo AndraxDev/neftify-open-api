@@ -1,5 +1,7 @@
 package sk.best.newtify.web.gui.layout;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -14,6 +16,8 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.ElementFactory;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import sk.best.newtify.api.dto.ETopicType;
@@ -25,8 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @author Marek Urban
- * Copyright © 2022 BEST Technická univerzita Košice.
+ * @author Marek Urban, AndraxDev
+ * Copyright © 2022 AndraxDev, BEST Technická univerzita Košice.
  * All rights reserved.
  */
 @Push
@@ -38,6 +42,7 @@ public class MainLayout extends AppLayout {
     private static final long serialVersionUID = 4107656392983873277L;
 
     private VerticalLayout navigationBar = new VerticalLayout();
+    Tabs tabs;
 
     public MainLayout() {
     }
@@ -56,7 +61,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void createTabs() {
-        Tabs tabs = new Tabs(true);
+        tabs = new Tabs(true);
 
         Map<ETopicType, Tab> topic2Tab = new HashMap<>();
 
@@ -108,6 +113,26 @@ public class MainLayout extends AppLayout {
             return;
         }
 
+        if (tabId.equals(ETopicType.FASHION.getValue())) {
+            UI.getCurrent().navigate(ETopicType.FASHION.getValue().toLowerCase());
+            return;
+        }
+
+        if (tabId.equals(ETopicType.FINANCE.getValue())) {
+            UI.getCurrent().navigate(ETopicType.FINANCE.getValue().toLowerCase());
+            return;
+        }
+
+        if (tabId.equals(ETopicType.MOVIE.getValue())) {
+            UI.getCurrent().navigate(ETopicType.MOVIE.getValue().toLowerCase());
+            return;
+        }
+
+        if (tabId.equals(ETopicType.MUSIC.getValue())) {
+            UI.getCurrent().navigate(ETopicType.MUSIC.getValue().toLowerCase());
+            return;
+        }
+
         UI.getCurrent().navigate(""); // default
     }
 
@@ -118,6 +143,18 @@ public class MainLayout extends AppLayout {
                 break;
             case GAMING:
                 topicTab.add(VaadinIcon.GAMEPAD.create());
+                break;
+            case FASHION:
+                topicTab.add(VaadinIcon.PICTURE.create());
+                break;
+            case FINANCE:
+                topicTab.add(VaadinIcon.DOLLAR.create());
+                break;
+            case MOVIE:
+                topicTab.add(VaadinIcon.MOVIE.create());
+                break;
+            case MUSIC:
+                topicTab.add(VaadinIcon.MUSIC.create());
                 break;
             default:
                 topicTab.setEnabled(false);
@@ -143,9 +180,16 @@ public class MainLayout extends AppLayout {
                 .set("flex-direction", "row")
                 .set("flex-wrap", "nowrap")
                 .set("align-items", "center")
-                .set("height", "100%");
+                .set("height", "100%")
+                .set("cursor", "pointer");
 
         navigationBar.add(titleDiv);
+        titleDiv.addClickListener(new ComponentEventListener<ClickEvent<Div>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Div> divClickEvent) {
+                UI.getCurrent().navigate(ETopicType.NEWS.getValue().toLowerCase());
+                tabs.setSelectedIndex(0);
+            }
+        });
     }
-
 }
