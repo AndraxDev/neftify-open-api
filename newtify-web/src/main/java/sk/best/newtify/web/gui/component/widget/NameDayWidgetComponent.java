@@ -28,12 +28,22 @@ import java.util.Locale;
 public class NameDayWidgetComponent extends FlexLayout {
 
     private static final long              serialVersionUID    = 1414727226197592073L;
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d LLLL uuuu", Locale.ENGLISH);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("LLLL uuuu", Locale.ENGLISH);
 
     private final NamedaysApi namedaysApi;
 
     public NameDayWidgetComponent(NamedaysApi namedaysApi) {
         this.namedaysApi = namedaysApi;
+    }
+
+    private String getOrdinalLabel(int day){
+        if(day == 1) return "st";
+        else if(day == 2) return "nd";
+        else if(day == 3) return "rd";
+        else if(day <= 20) return "th";
+
+        int mod = day%10;
+        return getOrdinalLabel(mod);
     }
 
     @PostConstruct
@@ -69,8 +79,11 @@ public class NameDayWidgetComponent extends FlexLayout {
         todayDateTitle.getStyle()
                 .set("color", "var(--lumo-contrast-color)");
 
-        H3 todayDateValue = new H3(DATE_TIME_FORMATTER.format(
-                LocalDate.of(currentYear, currentMonth, currentDay))
+        String monthYearDate = DATE_TIME_FORMATTER.format(
+                LocalDate.of(currentYear, currentMonth, currentDay));
+
+        H3 todayDateValue = new H3(
+                currentDay + getOrdinalLabel(currentDay) + " of " + monthYearDate
         );
         todayDateValue.getStyle()
                 .set("color", "white")
