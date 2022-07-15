@@ -1,5 +1,6 @@
 package sk.best.newtify.web.gui.view;
 
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -85,7 +86,7 @@ public class AdminView extends SplitLayout {
         Button deleteArticlesButton = createArticleDeleteButton(articleEditor, articleSelector);
         Button editCommentsButton = createCommentsUpdateButton(commentsEditor, commentsSelector);
 
-        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton, editCommentsButton);
+        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton);
         topRightPane.setSizeFull();
         topRightPane.getStyle()
                 .set("border", "var(--lumo-contrast-5pct) 5px solid");
@@ -154,6 +155,7 @@ public class AdminView extends SplitLayout {
             System.out.println("[DEBUG] AID::CID: " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId() + "::" + commentsCid);
             ConfirmDialog commentEditorDialog = commentsEditorObjectFactory.getObject().getConfirmDialog();
             commentEditorDialog.addConfirmListener(confirmEvent -> fetchComments(commentsSelector));
+            commentEditorDialog.addRejectListener(rejectEvent -> fetchComments(commentsSelector));
             commentEditorDialog.open();
         });
 

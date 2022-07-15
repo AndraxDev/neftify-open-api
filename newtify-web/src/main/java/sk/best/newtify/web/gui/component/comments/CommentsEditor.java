@@ -2,6 +2,8 @@ package sk.best.newtify.web.gui.component.comments;
 
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -61,8 +63,12 @@ public class CommentsEditor extends VerticalLayout {
         createBinder();
 
         confirmDialog.setCancelable(true);
+        confirmDialog.setRejectable(true);
+        confirmDialog.setRejectText("Delete");
+        confirmDialog.setConfirmText("Save");
         confirmDialog.addConfirmListener(this::onConfirmAction);
         confirmDialog.addCancelListener(this::onCancelAction);
+        confirmDialog.addRejectListener(this::onRejectAction);
         confirmDialog.addAttachListener(event -> {
             formLayout.setSizeFull();
             contentTextArea.setHeight("200px");
@@ -84,6 +90,17 @@ public class CommentsEditor extends VerticalLayout {
 
     }
 
+    private void onRejectAction(ConfirmDialog.RejectEvent rejectEvent) {
+        commentsApi.deleteComment(NewtifyWebApplication.newtifyStateService.getCommentCommentId(), NewtifyWebApplication.newtifyStateService.getCurrentArticleId());
+        Notification successNotification = new Notification("Deleted");
+        successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        successNotification.setPosition(Notification.Position.TOP_CENTER);
+        successNotification.setDuration(5000);
+        successNotification.open();
+        clear();
+        confirmDialog.close();
+    }
+
     private void onCancelAction(ConfirmDialog.CancelEvent cancelEvent) {
         clear();
         confirmDialog.close();
@@ -96,6 +113,12 @@ public class CommentsEditor extends VerticalLayout {
         }
         CreateCommentsDTO createCommentsDTO = CommentsMapper.toCreateComment(commentsDTOBinder.getBean());
         commentsApi.updateComment(NewtifyWebApplication.newtifyStateService.getCommentCommentId(), NewtifyWebApplication.newtifyStateService.getCurrentArticleId(), createCommentsDTO);
+        Notification successNotification = new Notification("Saved");
+        successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        successNotification.setPosition(Notification.Position.TOP_CENTER);
+        successNotification.setDuration(5000);
+        successNotification.open();
+        clear();
         confirmDialog.close();
     }
 
