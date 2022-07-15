@@ -11,6 +11,7 @@ import sk.best.newtify.api.CommentsApi;
 import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.web.gui.component.article.ArticlePreviewComponent;
 import sk.best.newtify.web.gui.component.comments.CommentComponent;
+import sk.best.newtify.web.gui.component.widget.BitcoinPriceWidgetComponent;
 import sk.best.newtify.web.gui.component.widget.NameDayWidgetComponent;
 import sk.best.newtify.web.gui.component.widget.WeatherWidget;
 import sk.best.newtify.web.gui.layout.MainLayout;
@@ -39,6 +40,7 @@ public class NewsView extends FlexLayout {
     private final ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory;
 
     private final ObjectFactory<CommentComponent> commentsPreviewObjectFactory;
+    private final ObjectFactory<BitcoinPriceWidgetComponent>  bitcoinPriceWidgetComponentObjectFactory;
 
     private final VerticalLayout middleContent      = new VerticalLayout();
     private final VerticalLayout leftWidgetContent  = new VerticalLayout();
@@ -51,13 +53,15 @@ public class NewsView extends FlexLayout {
                     ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory,
                     ObjectFactory<CommentComponent> commentsPreviewObjectFactory,
                     CommentsApi commentsApi,
-                    ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory) {
+                    ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory,
+                    ObjectFactory<BitcoinPriceWidgetComponent>  bitcoinPriceWidgetComponentObjectFactory) {
         this.articlesApi                         = articlesApi;
         this.articlePreviewObjectFactory         = articlePreviewObjectFactory;
         this.nameDayWidgetComponentObjectFactory = nameDayWidgetComponentObjectFactory;
         this.commentsApi = commentsApi;
         this.commentsPreviewObjectFactory = commentsPreviewObjectFactory;
         this.weatherWidgetObjectFactory = weatherWidgetObjectFactory;
+        this.bitcoinPriceWidgetComponentObjectFactory = bitcoinPriceWidgetComponentObjectFactory;
     }
 
     @PostConstruct
@@ -101,6 +105,9 @@ public class NewsView extends FlexLayout {
 
         NameDayWidgetComponent nameDayWidget = nameDayWidgetComponentObjectFactory.getObject();
         leftWidgetContent.add(nameDayWidget);
+
+        BitcoinPriceWidgetComponent bitcoinPriceWidget = bitcoinPriceWidgetComponentObjectFactory.getObject();
+        leftWidgetContent.add(bitcoinPriceWidget);
     }
 
     private void fetchArticles() {
