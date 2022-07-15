@@ -51,8 +51,11 @@ public class AdminView extends SplitLayout {
     private final ObjectFactory<CommentsEditor> commentsEditorObjectFactory;
 
     private final HorizontalLayout topLayout    = new HorizontalLayout();
+
+    private final HorizontalLayout bottomLayout    = new HorizontalLayout();
     private final VerticalLayout   topRightPane = new VerticalLayout();
-    private final VerticalLayout   bottomLayout = new VerticalLayout();
+    private final VerticalLayout   editArticle = new VerticalLayout();
+    private final VerticalLayout   commentsList = new VerticalLayout();
 
     public AdminView(ArticlesApi articlesApi, ObjectFactory<ArticleEditor> articleEditorObjectFactory, CommentsApi commentsApi, ObjectFactory<CommentsEditor> commentsEditorObjectFactory) {
         this.articlesApi                = articlesApi;
@@ -68,6 +71,8 @@ public class AdminView extends SplitLayout {
         topLayout.removeAll();
         topRightPane.removeAll();
         bottomLayout.removeAll();
+        editArticle.removeAll();
+        commentsList.removeAll();
 
         ArticleEditor articleEditor = articleEditorObjectFactory.getObject();
         CommentsEditor commentsEditor = commentsEditorObjectFactory.getObject();
@@ -87,7 +92,15 @@ public class AdminView extends SplitLayout {
         topLayout.add(articleSelector, topRightPane);
         topLayout.setSizeFull();
 
-        bottomLayout.add(articleEditor.getFormLayout(), articleEditor.getContentTextArea());
+        editArticle.add(articleEditor.getFormLayout(), articleEditor.getContentTextArea());
+        editArticle.getStyle().set("overflow", "hidden");
+        editArticle.getStyle().set("width", "75%");
+
+        commentsList.getStyle().set("overflow", "hidden");
+        commentsList.getStyle().set("width", "25%");
+
+        bottomLayout.add(editArticle);
+        bottomLayout.add(commentsList);
         bottomLayout.getStyle().set("overflow", "hidden");
         bottomLayout.setSizeFull();
 
