@@ -10,12 +10,15 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.server.StreamResource;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import sk.best.newtify.api.CommentsApi;
 import sk.best.newtify.api.dto.ArticleDTO;
+import sk.best.newtify.web.gui.component.comments.CommentComponent;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
@@ -43,8 +46,13 @@ public class ArticlePreviewComponent extends Composite<VerticalLayout> {
 
     private ArticleDTO article;
     private byte[]     imageData;
+    private CommentsApi commentsApi;
 
-    public ArticlePreviewComponent() {
+    private final ObjectFactory<CommentComponent> commentsPreviewObjectFactory;
+
+    public ArticlePreviewComponent(CommentsApi commentsApi, ObjectFactory<CommentComponent> commentsPreviewObjectFactory) {
+        this.commentsApi = commentsApi;
+        this.commentsPreviewObjectFactory = commentsPreviewObjectFactory;
     }
 
     public void setArticle(@Nullable ArticleDTO article) {
@@ -73,7 +81,7 @@ public class ArticlePreviewComponent extends Composite<VerticalLayout> {
             return;
         }
 
-        ArticleDialogComponent articleDialog = new ArticleDialogComponent();
+        ArticleDialogComponent articleDialog = new ArticleDialogComponent(commentsApi, commentsPreviewObjectFactory);
         articleDialog.setArticle(article, imageData);
         articleDialog.open();
     }
@@ -93,7 +101,7 @@ public class ArticlePreviewComponent extends Composite<VerticalLayout> {
 
     private byte[] fetchImage() {
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject("https://picsum.photos/500/250", byte[].class);
+        return restTemplate.getForObject("https://picsum.photos/1000/500", byte[].class);
     }
 
     private void clear() {
