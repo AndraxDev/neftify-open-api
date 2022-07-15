@@ -12,6 +12,7 @@ import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.web.gui.component.article.ArticlePreviewComponent;
 import sk.best.newtify.web.gui.component.comments.CommentComponent;
 import sk.best.newtify.web.gui.component.widget.NameDayWidgetComponent;
+import sk.best.newtify.web.gui.component.widget.WeatherWidget;
 import sk.best.newtify.web.gui.layout.MainLayout;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +36,7 @@ public class NewsView extends FlexLayout {
     private final CommentsApi commentsApi;
     private final ObjectFactory<ArticlePreviewComponent> articlePreviewObjectFactory;
     private final ObjectFactory<NameDayWidgetComponent>  nameDayWidgetComponentObjectFactory;
+    private final ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory;
 
     private final ObjectFactory<CommentComponent> commentsPreviewObjectFactory;
 
@@ -46,12 +48,16 @@ public class NewsView extends FlexLayout {
 
     public NewsView(ArticlesApi articlesApi,
                     ObjectFactory<ArticlePreviewComponent> articlePreviewObjectFactory,
-                    ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory, ObjectFactory<CommentComponent> commentsPreviewObjectFactory, CommentsApi commentsApi) {
+                    ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory,
+                    ObjectFactory<CommentComponent> commentsPreviewObjectFactory,
+                    CommentsApi commentsApi,
+                    ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory) {
         this.articlesApi                         = articlesApi;
         this.articlePreviewObjectFactory         = articlePreviewObjectFactory;
         this.nameDayWidgetComponentObjectFactory = nameDayWidgetComponentObjectFactory;
         this.commentsApi = commentsApi;
         this.commentsPreviewObjectFactory = commentsPreviewObjectFactory;
+        this.weatherWidgetObjectFactory = weatherWidgetObjectFactory;
     }
 
     @PostConstruct
@@ -82,6 +88,9 @@ public class NewsView extends FlexLayout {
         rightWidgetContent.setAlignItems(Alignment.CENTER);
         setFlexShrink(2, rightWidgetContent);
         setFlexGrow(1, rightWidgetContent);
+
+        WeatherWidget weatherWidget = weatherWidgetObjectFactory.getObject();
+        rightWidgetContent.add(weatherWidget);
     }
 
     private void createLeftWidgetPane() {
