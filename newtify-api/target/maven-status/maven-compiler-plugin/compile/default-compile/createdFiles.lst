@@ -1,0 +1,10 @@
+sk\best\newtify\api\ArticlesApi.class
+sk\best\newtify\api\dto\CreateArticleDTO.class
+sk\best\newtify\api\CommentsApi.class
+sk\best\newtify\api\dto\CreateCommentsDTO.class
+sk\best\newtify\api\dto\NameDayDTO.class
+sk\best\newtify\api\NamedaysApi.class
+sk\best\newtify\api\dto\CommentsDTO.class
+sk\best\newtify\api\dto\Error.class
+sk\best\newtify\api\dto\ArticleDTO.class
+sk\best\newtify\api\dto\ETopicType.class

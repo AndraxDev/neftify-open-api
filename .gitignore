@@ -1,5 +1,3 @@
-# mvn
-target/
 assembly/
 
 # gradle
@@ -16,8 +14,7 @@ idea
 node_modules/
 
 # spring
-application-LOCAL.properties
-
+*.bak
 # logs
 *.log
 *.tmp
