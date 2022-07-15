@@ -56,6 +56,7 @@ public class AdminView extends SplitLayout {
     private final VerticalLayout   topRightPane = new VerticalLayout();
     private final VerticalLayout   editArticle = new VerticalLayout();
     private final VerticalLayout   commentsList = new VerticalLayout();
+    public ListBox<CommentsDTO> commentsSelector;
 
     public AdminView(ArticlesApi articlesApi, ObjectFactory<ArticleEditor> articleEditorObjectFactory, CommentsApi commentsApi, ObjectFactory<CommentsEditor> commentsEditorObjectFactory) {
         this.articlesApi                = articlesApi;
@@ -77,7 +78,7 @@ public class AdminView extends SplitLayout {
         ArticleEditor articleEditor = articleEditorObjectFactory.getObject();
         CommentsEditor commentsEditor = commentsEditorObjectFactory.getObject();
         ListBox<ArticleDTO> articleSelector = createArticleSelector(articleEditor);
-        ListBox<CommentsDTO> commentsSelector = createCommentsSelector(commentsEditor);
+        commentsSelector = createCommentsSelector(commentsEditor);
         Button fetchArticlesButton = createArticlesFetchButton(articleSelector);
         Button createArticlesButton = createArticlesCreateButton(articleSelector);
         Button updateArticlesButton = createArticleUpdateButton(articleEditor, articleSelector);
@@ -98,6 +99,7 @@ public class AdminView extends SplitLayout {
 
         commentsList.getStyle().set("overflow", "hidden");
         commentsList.getStyle().set("width", "25%");
+        commentsList.add(commentsSelector);
 
         bottomLayout.add(editArticle);
         bottomLayout.add(commentsList);
@@ -125,6 +127,7 @@ public class AdminView extends SplitLayout {
             articleEditor.getArticleBinder().getBean().setUuid(event.getValue().getUuid());
             NewtifyWebApplication.newtifyStateService.setCurrentArticleId(event.getValue().getUuid());
             System.out.println("[DEBUG] Current article ID has changed to:  " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId());
+            fetchComments(commentsSelector);
         });
 
         return selector;
@@ -140,9 +143,6 @@ public class AdminView extends SplitLayout {
             if (event.getValue() == null) {
                 return;
             }
-            commentsEditor.getCommentsDTOBinder().setBean(event.getValue());
-            commentsEditor.getContentTextArea().setValue(event.getValue().getComment());
-            commentsEditor.getCommentsDTOBinder().getBean().setUuid(event.getValue().getUuid());
         });
 
         return selector;
