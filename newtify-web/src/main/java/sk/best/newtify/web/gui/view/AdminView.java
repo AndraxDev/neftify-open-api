@@ -1,5 +1,6 @@
 package sk.best.newtify.web.gui.view;
 
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -56,6 +57,7 @@ public class AdminView extends SplitLayout {
     private final VerticalLayout   topRightPane = new VerticalLayout();
     private final VerticalLayout   editArticle = new VerticalLayout();
     private final VerticalLayout   commentsList = new VerticalLayout();
+    public ListBox<CommentsDTO> commentsSelector;
 
     public AdminView(ArticlesApi articlesApi, ObjectFactory<ArticleEditor> articleEditorObjectFactory, CommentsApi commentsApi, ObjectFactory<CommentsEditor> commentsEditorObjectFactory) {
         this.articlesApi                = articlesApi;
@@ -77,14 +79,14 @@ public class AdminView extends SplitLayout {
         ArticleEditor articleEditor = articleEditorObjectFactory.getObject();
         CommentsEditor commentsEditor = commentsEditorObjectFactory.getObject();
         ListBox<ArticleDTO> articleSelector = createArticleSelector(articleEditor);
-        ListBox<CommentsDTO> commentsSelector = createCommentsSelector(commentsEditor);
+        commentsSelector = createCommentsSelector(commentsEditor);
         Button fetchArticlesButton = createArticlesFetchButton(articleSelector);
         Button createArticlesButton = createArticlesCreateButton(articleSelector);
         Button updateArticlesButton = createArticleUpdateButton(articleEditor, articleSelector);
         Button deleteArticlesButton = createArticleDeleteButton(articleEditor, articleSelector);
         Button editCommentsButton = createCommentsUpdateButton(commentsEditor, commentsSelector);
 
-        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton, editCommentsButton);
+        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton);
         topRightPane.setSizeFull();
         topRightPane.getStyle()
                 .set("border", "var(--lumo-contrast-5pct) 5px solid");
@@ -98,6 +100,7 @@ public class AdminView extends SplitLayout {
 
         commentsList.getStyle().set("overflow", "hidden");
         commentsList.getStyle().set("width", "25%");
+        commentsList.add(commentsSelector);
 
         bottomLayout.add(editArticle);
         bottomLayout.add(commentsList);
@@ -125,6 +128,7 @@ public class AdminView extends SplitLayout {
             articleEditor.getArticleBinder().getBean().setUuid(event.getValue().getUuid());
             NewtifyWebApplication.newtifyStateService.setCurrentArticleId(event.getValue().getUuid());
             System.out.println("[DEBUG] Current article ID has changed to:  " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId());
+            fetchComments(commentsSelector);
         });
 
         return selector;
@@ -140,9 +144,19 @@ public class AdminView extends SplitLayout {
             if (event.getValue() == null) {
                 return;
             }
-            commentsEditor.getCommentsDTOBinder().setBean(event.getValue());
-            commentsEditor.getContentTextArea().setValue(event.getValue().getComment());
-            commentsEditor.getCommentsDTOBinder().getBean().setUuid(event.getValue().getUuid());
+
+            String commentsCid = event.getValue().getCid();
+            NewtifyWebApplication.newtifyStateService.setCommentAuthor(event.getValue().getName());
+            NewtifyWebApplication.newtifyStateService.setCommentAuthorEmail(event.getValue().getEmail());
+            NewtifyWebApplication.newtifyStateService.setCommentContent(event.getValue().getComment());
+            NewtifyWebApplication.newtifyStateService.setCurrentArticleId(event.getValue().getUuid());
+            NewtifyWebApplication.newtifyStateService.setCommentCommentId(event.getValue().getCid());
+            NewtifyWebApplication.newtifyStateService.setCommentCreatedAt(event.getValue().getCreatedAt());
+            System.out.println("[DEBUG] AID::CID: " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId() + "::" + commentsCid);
+            ConfirmDialog commentEditorDialog = commentsEditorObjectFactory.getObject().getConfirmDialog();
+            commentEditorDialog.addConfirmListener(confirmEvent -> fetchComments(commentsSelector));
+            commentEditorDialog.addRejectListener(rejectEvent -> fetchComments(commentsSelector));
+            commentEditorDialog.open();
         });
 
         return selector;

@@ -1,0 +1,13 @@
+sk\best\newtify\backend\controller\ArticlesController.class
+sk\best\newtify\backend\entity\enums\TopicType.class
+sk\best\newtify\backend\controller\CommentController.class
+sk\best\newtify\backend\entity\Comment.class
+sk\best\newtify\backend\service\NamedayService.class
+sk\best\newtify\backend\NewtifyBackendApplication.class
+sk\best\newtify\backend\Category.class
+sk\best\newtify\backend\service\CommentService.class
+sk\best\newtify\backend\entity\Article.class
+sk\best\newtify\backend\service\ArticleService.class
+sk\best\newtify\backend\repository\ArticleRepository.class
+sk\best\newtify\backend\repository\CommentRepository.class
+sk\best\newtify\backend\controller\NamedaysController.class
