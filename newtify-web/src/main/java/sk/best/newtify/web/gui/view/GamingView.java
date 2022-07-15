@@ -9,7 +9,10 @@ import sk.best.newtify.api.ArticlesApi;
 import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.api.dto.ETopicType;
 import sk.best.newtify.web.gui.component.article.ArticlePreviewComponent;
+import sk.best.newtify.web.gui.component.comments.CommentComponent;
+import sk.best.newtify.web.gui.component.widget.BitcoinPriceWidgetComponent;
 import sk.best.newtify.web.gui.component.widget.NameDayWidgetComponent;
+import sk.best.newtify.web.gui.component.widget.WeatherWidget;
 import sk.best.newtify.web.gui.layout.MainLayout;
 
 import javax.annotation.PostConstruct;
@@ -35,14 +38,20 @@ public class GamingView extends FlexLayout {
     private final VerticalLayout leftWidgetContent  = new VerticalLayout();
     private final VerticalLayout rightWidgetContent = new VerticalLayout();
 
+    private final ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory;
+    private final ObjectFactory<BitcoinPriceWidgetComponent>  bitcoinPriceWidgetComponentObjectFactory;
+
     private List<ArticleDTO> articles = Collections.emptyList();
 
     public GamingView(ArticlesApi articlesApi,
                       ObjectFactory<ArticlePreviewComponent> articlePreviewObjectFactory,
-                      ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory) {
+                      ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory, ObjectFactory<WeatherWidget>  weatherWidgetObjectFactory,
+                      ObjectFactory<BitcoinPriceWidgetComponent>  bitcoinPriceWidgetComponentObjectFactory) {
         this.articlesApi                         = articlesApi;
         this.articlePreviewObjectFactory         = articlePreviewObjectFactory;
         this.nameDayWidgetComponentObjectFactory = nameDayWidgetComponentObjectFactory;
+        this.weatherWidgetObjectFactory = weatherWidgetObjectFactory;
+        this.bitcoinPriceWidgetComponentObjectFactory = bitcoinPriceWidgetComponentObjectFactory;
     }
 
     @PostConstruct
@@ -73,6 +82,9 @@ public class GamingView extends FlexLayout {
         rightWidgetContent.setAlignItems(Alignment.CENTER);
         setFlexShrink(2, rightWidgetContent);
         setFlexGrow(1, rightWidgetContent);
+
+        WeatherWidget weatherWidget = weatherWidgetObjectFactory.getObject();
+        rightWidgetContent.add(weatherWidget);
     }
 
     private void createLeftWidgetPane() {
@@ -83,6 +95,9 @@ public class GamingView extends FlexLayout {
 
         NameDayWidgetComponent nameDayWidget = nameDayWidgetComponentObjectFactory.getObject();
         leftWidgetContent.add(nameDayWidget);
+
+        BitcoinPriceWidgetComponent bitcoinPriceWidget = bitcoinPriceWidgetComponentObjectFactory.getObject();
+        leftWidgetContent.add(bitcoinPriceWidget);
     }
 
     private void fetchArticles() {
