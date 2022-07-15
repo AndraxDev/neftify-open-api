@@ -1,5 +1,11 @@
 package sk.best.newtify.web.state;
 
+/**
+ * @author AndraxDev
+ * Copyright © 2022 AndraxDev, BEST Technická univerzita Košice.
+ * All rights reserved.
+ */
+
 public class NewtifyStateService {
 
     private String CURRENT_ARTICLE_ID = "";
