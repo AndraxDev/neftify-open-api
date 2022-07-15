@@ -46,7 +46,7 @@ public class CommentsEditor extends VerticalLayout {
         emailField.setSizeFull();
         contentTextArea.setSizeFull();
 
-        confirmDialog.setHeader("Write a comment");
+        confirmDialog.setHeader("Edit comment");
         confirmDialog.setHeight("600px");
     }
 
@@ -72,9 +72,20 @@ public class CommentsEditor extends VerticalLayout {
 
         this.setSizeFull();
         this.add(formLayout);
+
+        System.out.println("[UI MANAGER] +++++++++++++ DRAWING EDIT COMMENTS INFO +++++++++++++");
+        System.out.println("[UI MANAGER] @param name: " + NewtifyWebApplication.newtifyStateService.getCommentAuthor());
+        System.out.println("[UI MANAGER] @param email: " + NewtifyWebApplication.newtifyStateService.getCommentAuthorEmail());
+        System.out.println("[UI MANAGER] @param content: " + NewtifyWebApplication.newtifyStateService.getCommentContent());
+
+        nameField.setValue(NewtifyWebApplication.newtifyStateService.getCommentAuthor());
+        emailField.setValue(NewtifyWebApplication.newtifyStateService.getCommentAuthorEmail());
+        contentTextArea.setValue(NewtifyWebApplication.newtifyStateService.getCommentContent());
+
     }
 
     private void onCancelAction(ConfirmDialog.CancelEvent cancelEvent) {
+        clear();
         confirmDialog.close();
     }
 
@@ -84,7 +95,7 @@ public class CommentsEditor extends VerticalLayout {
             return;
         }
         CreateCommentsDTO createCommentsDTO = CommentsMapper.toCreateComment(commentsDTOBinder.getBean());
-        commentsApi.createComment(NewtifyWebApplication.newtifyStateService.getCurrentArticleId(), createCommentsDTO);
+        commentsApi.updateComment(NewtifyWebApplication.newtifyStateService.getCommentCommentId(), NewtifyWebApplication.newtifyStateService.getCurrentArticleId(), createCommentsDTO);
         confirmDialog.close();
     }
 

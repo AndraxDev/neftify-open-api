@@ -121,12 +121,12 @@ public class CommentsConnectorService implements CommentsApi {
 
             int position = 0;
             for (CommentsDTO d: data) {
-                System.out.println("+++++++++++++++++++++ COMMENTS OBJECT ++++++++++++++++++++");
-                System.out.println("| [DEBUG] Position: " + Integer.toString(position));
-                System.out.println("| [DEBUG] Comment author: " + d.getName());
-                System.out.println("| [DEBUG] Comment author email: " + d.getEmail());
-                System.out.println("| [DEBUG] Comment text: " + d.getComment());
-                System.out.println("| [DEBUG] Comment ID: " + d.getCid());
+//                System.out.println("+++++++++++++++++++++ COMMENTS OBJECT ++++++++++++++++++++");
+//                System.out.println("| [DEBUG] Position: " + Integer.toString(position));
+//                System.out.println("| [DEBUG] Comment author: " + d.getName());
+//                System.out.println("| [DEBUG] Comment author email: " + d.getEmail());
+//                System.out.println("| [DEBUG] Comment text: " + d.getComment());
+//                System.out.println("| [DEBUG] Comment ID: " + d.getCid());
                 position++;
             }
 

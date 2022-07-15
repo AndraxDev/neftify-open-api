@@ -143,6 +143,18 @@ public class AdminView extends SplitLayout {
             if (event.getValue() == null) {
                 return;
             }
+
+            String commentsCid = event.getValue().getCid();
+            NewtifyWebApplication.newtifyStateService.setCommentAuthor(event.getValue().getName());
+            NewtifyWebApplication.newtifyStateService.setCommentAuthorEmail(event.getValue().getEmail());
+            NewtifyWebApplication.newtifyStateService.setCommentContent(event.getValue().getComment());
+            NewtifyWebApplication.newtifyStateService.setCurrentArticleId(event.getValue().getUuid());
+            NewtifyWebApplication.newtifyStateService.setCommentCommentId(event.getValue().getCid());
+            NewtifyWebApplication.newtifyStateService.setCommentCreatedAt(event.getValue().getCreatedAt());
+            System.out.println("[DEBUG] AID::CID: " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId() + "::" + commentsCid);
+            ConfirmDialog commentEditorDialog = commentsEditorObjectFactory.getObject().getConfirmDialog();
+            commentEditorDialog.addConfirmListener(confirmEvent -> fetchComments(commentsSelector));
+            commentEditorDialog.open();
         });
 
         return selector;
