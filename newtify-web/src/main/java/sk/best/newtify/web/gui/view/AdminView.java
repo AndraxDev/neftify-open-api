@@ -19,9 +19,14 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.http.ResponseEntity;
 import sk.best.newtify.api.ArticlesApi;
+import sk.best.newtify.api.CommentsApi;
 import sk.best.newtify.api.dto.ArticleDTO;
+import sk.best.newtify.api.dto.CommentsDTO;
+import sk.best.newtify.web.bootstrap.NewtifyWebApplication;
 import sk.best.newtify.web.gui.component.article.ArticleEditor;
+import sk.best.newtify.web.gui.component.comments.CommentsEditor;
 import sk.best.newtify.web.util.ArticleMapper;
+import sk.best.newtify.web.util.CommentsMapper;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
@@ -42,15 +47,21 @@ public class AdminView extends SplitLayout {
 
     private final ArticlesApi                  articlesApi;
     private final ObjectFactory<ArticleEditor> articleEditorObjectFactory;
+    private final CommentsApi commentsApi;
+    private final ObjectFactory<CommentsEditor> commentsEditorObjectFactory;
 
     private final HorizontalLayout topLayout    = new HorizontalLayout();
-    private final VerticalLayout   topRightPane = new VerticalLayout();
-    private final VerticalLayout   bottomLayout = new VerticalLayout();
 
-    public AdminView(ArticlesApi articlesApi,
-                     ObjectFactory<ArticleEditor> articleEditorObjectFactory) {
+    private final HorizontalLayout bottomLayout    = new HorizontalLayout();
+    private final VerticalLayout   topRightPane = new VerticalLayout();
+    private final VerticalLayout   editArticle = new VerticalLayout();
+    private final VerticalLayout   commentsList = new VerticalLayout();
+
+    public AdminView(ArticlesApi articlesApi, ObjectFactory<ArticleEditor> articleEditorObjectFactory, CommentsApi commentsApi, ObjectFactory<CommentsEditor> commentsEditorObjectFactory) {
         this.articlesApi                = articlesApi;
         this.articleEditorObjectFactory = articleEditorObjectFactory;
+        this.commentsApi                = commentsApi;
+        this.commentsEditorObjectFactory = commentsEditorObjectFactory;
     }
 
     @PostConstruct
@@ -60,15 +71,20 @@ public class AdminView extends SplitLayout {
         topLayout.removeAll();
         topRightPane.removeAll();
         bottomLayout.removeAll();
+        editArticle.removeAll();
+        commentsList.removeAll();
 
         ArticleEditor articleEditor = articleEditorObjectFactory.getObject();
+        CommentsEditor commentsEditor = commentsEditorObjectFactory.getObject();
         ListBox<ArticleDTO> articleSelector = createArticleSelector(articleEditor);
+        ListBox<CommentsDTO> commentsSelector = createCommentsSelector(commentsEditor);
         Button fetchArticlesButton = createArticlesFetchButton(articleSelector);
         Button createArticlesButton = createArticlesCreateButton(articleSelector);
         Button updateArticlesButton = createArticleUpdateButton(articleEditor, articleSelector);
         Button deleteArticlesButton = createArticleDeleteButton(articleEditor, articleSelector);
+        Button editCommentsButton = createCommentsUpdateButton(commentsEditor, commentsSelector);
 
-        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton);
+        topRightPane.add(fetchArticlesButton, createArticlesButton, updateArticlesButton, deleteArticlesButton, editCommentsButton);
         topRightPane.setSizeFull();
         topRightPane.getStyle()
                 .set("border", "var(--lumo-contrast-5pct) 5px solid");
@@ -76,7 +92,15 @@ public class AdminView extends SplitLayout {
         topLayout.add(articleSelector, topRightPane);
         topLayout.setSizeFull();
 
-        bottomLayout.add(articleEditor.getFormLayout(), articleEditor.getContentTextArea());
+        editArticle.add(articleEditor.getFormLayout(), articleEditor.getContentTextArea());
+        editArticle.getStyle().set("overflow", "hidden");
+        editArticle.getStyle().set("width", "75%");
+
+        commentsList.getStyle().set("overflow", "hidden");
+        commentsList.getStyle().set("width", "25%");
+
+        bottomLayout.add(editArticle);
+        bottomLayout.add(commentsList);
         bottomLayout.getStyle().set("overflow", "hidden");
         bottomLayout.setSizeFull();
 
@@ -99,6 +123,26 @@ public class AdminView extends SplitLayout {
             articleEditor.getArticleBinder().setBean(event.getValue());
             articleEditor.getContentTextArea().setValue(event.getValue().getText());
             articleEditor.getArticleBinder().getBean().setUuid(event.getValue().getUuid());
+            NewtifyWebApplication.newtifyStateService.setCurrentArticleId(event.getValue().getUuid());
+            System.out.println("[DEBUG] Current article ID has changed to:  " + NewtifyWebApplication.newtifyStateService.getCurrentArticleId());
+        });
+
+        return selector;
+    }
+
+    private ListBox<CommentsDTO> createCommentsSelector(CommentsEditor commentsEditor) {
+        ListBox<CommentsDTO> selector = new ListBox<>();
+        selector.setSizeFull();
+        selector.setRenderer(createCommentsSelectorRenderer());
+        fetchComments(selector);
+
+        selector.addValueChangeListener(event -> {
+            if (event.getValue() == null) {
+                return;
+            }
+            commentsEditor.getCommentsDTOBinder().setBean(event.getValue());
+            commentsEditor.getContentTextArea().setValue(event.getValue().getComment());
+            commentsEditor.getCommentsDTOBinder().getBean().setUuid(event.getValue().getUuid());
         });
 
         return selector;
@@ -192,10 +236,30 @@ public class AdminView extends SplitLayout {
         return button;
     }
 
+    private Button createCommentsUpdateButton(CommentsEditor commentsEditor,
+                                             ListBox<CommentsDTO> commentsSelector) {
+        Button button = new Button("Edit comment", VaadinIcon.EDIT.create());
+        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        button.addClickListener(event -> {
+            ConfirmDialog commentsEditorDialog = commentsEditorObjectFactory.getObject().getConfirmDialog();
+            commentsEditorDialog.addConfirmListener(confirmEvent -> fetchComments(commentsSelector));
+            commentsEditorDialog.open();
+        });
+        return button;
+    }
+
     private void fetchArticles(ListBox<ArticleDTO> articleSelector) {
         articleSelector.setItems(
                 articlesApi
                         .retrieveArticles(null)
+                        .getBody()
+        );
+    }
+
+    private void fetchComments(ListBox<CommentsDTO> commentsSelector) {
+        commentsSelector.setItems(
+                commentsApi
+                        .getComments(NewtifyWebApplication.newtifyStateService.getCurrentArticleId())
                         .getBody()
         );
     }
@@ -214,6 +278,39 @@ public class AdminView extends SplitLayout {
 
             Div content = new Div();
             content.add(new Span(article.getAuthor()));
+            content.add(new Span(
+                    DATE_FORMATTER.format(
+                            Instant.ofEpochSecond(article.getCreatedAt())
+                                    .atZone(ZoneId.systemDefault())
+                    )
+            ));
+
+            content.getStyle()
+                    .set("font-size", "var(--lumo-font-size-s)")
+                    .set("color", "var(--lumo-secondary-text-color)")
+                    .set("display", "flex")
+                    .set("flex-direction", "column");
+            titleAndContent.add(content);
+
+            wrapper.add(topicBadge, titleAndContent);
+            return wrapper;
+        });
+    }
+
+    private static ComponentRenderer<FlexLayout, CommentsDTO> createCommentsSelectorRenderer() {
+        return new ComponentRenderer<>(article -> {
+            FlexLayout wrapper = new FlexLayout();
+
+            Span topicBadge = new Span(article.getUuid());
+            topicBadge.getElement().getThemeList().add("badge secondary");
+            topicBadge.getStyle().set("margin-right", "1em");
+            topicBadge.setWidth("8em");
+
+            Div titleAndContent = new Div();
+            titleAndContent.setText(article.getName());
+
+            Div content = new Div();
+            content.add(new Span(article.getComment()));
             content.add(new Span(
                     DATE_FORMATTER.format(
                             Instant.ofEpochSecond(article.getCreatedAt())

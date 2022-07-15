@@ -120,6 +120,4 @@ public class ArticleService {
         article.setTopicType(createArticleDTO.getTopicType() != null ? TopicType.fromValue(createArticleDTO.getTopicType().getValue()) : article.getTopicType());
         articleRepository.save(article);
     }
-
-
 }

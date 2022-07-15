@@ -7,8 +7,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import org.springframework.beans.factory.ObjectFactory;
 import sk.best.newtify.api.ArticlesApi;
+import sk.best.newtify.api.CommentsApi;
 import sk.best.newtify.api.dto.ArticleDTO;
 import sk.best.newtify.web.gui.component.article.ArticlePreviewComponent;
+import sk.best.newtify.web.gui.component.comments.CommentComponent;
 import sk.best.newtify.web.gui.component.widget.NameDayWidgetComponent;
 import sk.best.newtify.web.gui.layout.MainLayout;
 
@@ -29,8 +31,12 @@ public class NewsView extends FlexLayout {
     private static final long serialVersionUID = 4107656392983873277L;
 
     private final ArticlesApi                            articlesApi;
+
+    private final CommentsApi commentsApi;
     private final ObjectFactory<ArticlePreviewComponent> articlePreviewObjectFactory;
     private final ObjectFactory<NameDayWidgetComponent>  nameDayWidgetComponentObjectFactory;
+
+    private final ObjectFactory<CommentComponent> commentsPreviewObjectFactory;
 
     private final VerticalLayout middleContent      = new VerticalLayout();
     private final VerticalLayout leftWidgetContent  = new VerticalLayout();
@@ -40,10 +46,12 @@ public class NewsView extends FlexLayout {
 
     public NewsView(ArticlesApi articlesApi,
                     ObjectFactory<ArticlePreviewComponent> articlePreviewObjectFactory,
-                    ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory) {
+                    ObjectFactory<NameDayWidgetComponent> nameDayWidgetComponentObjectFactory, ObjectFactory<CommentComponent> commentsPreviewObjectFactory, CommentsApi commentsApi) {
         this.articlesApi                         = articlesApi;
         this.articlePreviewObjectFactory         = articlePreviewObjectFactory;
         this.nameDayWidgetComponentObjectFactory = nameDayWidgetComponentObjectFactory;
+        this.commentsApi = commentsApi;
+        this.commentsPreviewObjectFactory = commentsPreviewObjectFactory;
     }
 
     @PostConstruct
